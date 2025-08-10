@@ -17,7 +17,18 @@ class ViewController: UIViewController, UITableViewDataSource {
 
         tableView.dataSource = self
         fetchPosts()
-
+        
+        // Set navigation title
+        self.title = "Blog Posts"
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        // Deselect any selected row when returning from detail view
+        if let selectedIndexPath = tableView.indexPathForSelectedRow {
+            tableView.deselectRow(at: selectedIndexPath, animated: true)
+        }
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -37,6 +48,22 @@ class ViewController: UIViewController, UITableViewDataSource {
         }
 
         return cell
+    }
+    
+    // MARK: - Navigation
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        // Get the selected row
+        guard let selectedIndexPath = tableView.indexPathForSelectedRow else { return }
+        
+        // Get the post associated with the selected row
+        let selectedPost = posts[selectedIndexPath.row]
+        
+        // Get the DetailViewController
+        guard let detailViewController = segue.destination as? DetailViewController else { return }
+        
+        // Pass the selected post to the detail view controller
+        detailViewController.post = selectedPost
     }
 
     func fetchPosts() {
